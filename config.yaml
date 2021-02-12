@@ -1,0 +1,4 @@
+credentials_location: "credentials.json"
+voice:
+  languageCode: "cmn-CN"
+  name: "cmn-CN-Wavenet-A"

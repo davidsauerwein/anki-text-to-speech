@@ -1,4 +1,3 @@
 # Pycharm
 /.idea
-# For now do not commit the config since the API key is in there
-config.yaml
+credentials.json

@@ -18,8 +18,7 @@ def parse_config_file(filename):
 
 def main():
     config = parse_config_file('config.yaml')
-    speech_synthesizer = SpeechSynthesizer(config['apiUrl'],
-                                           config['apiKey'],
+    speech_synthesizer = SpeechSynthesizer(config['credentials_location'],
                                            config['voice']['languageCode'],
                                            config['voice']['name'])
 

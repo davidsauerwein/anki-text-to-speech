@@ -1,48 +1,30 @@
-import base64
+from google.cloud import texttospeech
+from google.oauth2 import service_account
 
-import requests
 
-
+# noinspection PyTypeChecker
 class SpeechSynthesizer:
     def __init__(self,
-                 api_url: str,
-                 api_key: str,
+                 credentials_location: str,
                  voice_language_code: str,
                  voice_name: str):
-        self.api_url = api_url
-        self.api_key = api_key
-        self.voice_language_code = voice_language_code
-        self.voice_name = voice_name
-        self.audio_encoding = 'LINEAR16'
-        self.audio_pitch = 0
-        self.audio_speaking_rate = 1
-
-    def synthesize(self, text: str) -> str:
-        payload = {'audioConfig': {'audioEncoding': self.audio_encoding,
-                                   'pitch': self.audio_pitch,
-                                   'speakingRate': self.audio_speaking_rate},
-                   'input': {'text': text},
-                   'voice': {'languageCode': self.voice_language_code,
-                             'name': self.voice_name}}
-
-        r = requests.post(self.api_url,
-                          params={'key': self.api_key},
-                          json=payload)
-        r.raise_for_status()
-
-        reply = r.json()
-        encoded_audio = reply['audioContent']
-
-        return encoded_audio
-
-    def decode_audio_to_file(self, encoded_audio: str, filename: str) -> None:
-        if self.audio_encoding != 'LINEAR16':
-            raise NotImplemented
-
-        decoded_audio = base64.b64decode(encoded_audio)
-        with open(filename, 'wb') as f:
-            f.write(decoded_audio)
+        credentials = service_account.Credentials.from_service_account_file(credentials_location)
+        self.client = texttospeech.TextToSpeechClient(credentials=credentials)
+        self.voice = texttospeech.VoiceSelectionParams(
+            language_code=voice_language_code,
+            name=voice_name
+        )
+        self.audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.LINEAR16
+        )
 
     def synthesize_to_file(self, text: str, filename: str) -> None:
-        encoded_audio = self.synthesize(text)
-        self.decode_audio_to_file(encoded_audio, filename)
+        text_input = texttospeech.SynthesisInput(text=text)
+        response = self.client.synthesize_speech(
+            input=text_input,
+            voice=self.voice,
+            audio_config=self.audio_config
+        )
+
+        with open(filename, 'wb') as output_file:
+            output_file.write(response.audio_content)
