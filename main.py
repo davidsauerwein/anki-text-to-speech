@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import yaml
 
+from ankiconnectclient import AnkiConnectClient
 from cardgenerator import CardGenerator
 from speechsynthesizer import SpeechSynthesizer
 
@@ -21,9 +22,10 @@ def main():
     speech_synthesizer = SpeechSynthesizer(config['credentials_location'],
                                            config['voice']['languageCode'],
                                            config['voice']['name'])
+    anki_connect_client = AnkiConnectClient('http://localhost:8765')
 
-    card_generator = CardGenerator(speech_synthesizer)
-    card_generator.generate('test')
+    card_generator = CardGenerator(speech_synthesizer, anki_connect_client, 'testDeck')
+    card_generator.add_notes('你好')
 
 
 if __name__ == '__main__':
