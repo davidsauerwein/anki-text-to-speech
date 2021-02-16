@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pyyaml = "*"
 google-cloud-texttospeech = "*"
+urllib3 = "*"
 
 [dev-packages]
 
