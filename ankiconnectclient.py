@@ -1,5 +1,6 @@
 import json
 import urllib.request
+from typing import List
 
 
 class AnkiConnectClient:
@@ -13,7 +14,7 @@ class AnkiConnectClient:
 
     # This method is slightly modified version of the anki-connect python sample
     # https://github.com/FooSoft/anki-connect#python
-    def invoke(self, action: str, **params):
+    def __invoke(self, action: str, **params):
         request_json = json.dumps(self.__request(action, **params)).encode('utf-8')
         response = json.load(urllib.request.urlopen(urllib.request.Request(self.url, request_json)))
         if len(response) != 2:
@@ -25,3 +26,24 @@ class AnkiConnectClient:
         if response['error'] is not None:
             raise Exception(response['error'])
         return response['result']
+
+    def get_note_infos(self, query: str) -> List[dict]:
+        note_ids = self.__invoke('findNotes', query=query)
+        return self.__invoke('notesInfo', notes=note_ids)
+
+    def media_exists(self, filename: str) -> bool:
+        result = self.__invoke('retrieveMediaFile', filename=filename)
+        return result is not False
+
+    def add_media(self, filename: str, data: str) -> None:
+        self.__invoke('storeMediaFile', filename=filename, data=data)
+
+    def update_note_field(self, note_id: int, field: str, value) -> None:
+        note = {'id': note_id,
+                'fields': {
+                    field: value
+                }}
+        self.__invoke('updateNoteFields', note=note)
+
+    def tag_note(self, note_id: int, tag: str) -> None:
+        self.__invoke('addTags', notes=[note_id], tags=tag)

@@ -2,7 +2,7 @@
 import yaml
 
 from ankiconnectclient import AnkiConnectClient
-from cardgenerator import CardGenerator
+from cardupdater import CardUpdater
 from speechsynthesizer import SpeechSynthesizer
 
 
@@ -24,8 +24,17 @@ def main():
                                            config['voice']['name'])
     anki_connect_client = AnkiConnectClient('http://localhost:8765')
 
-    card_generator = CardGenerator(speech_synthesizer, anki_connect_client, 'testDeck')
-    card_generator.add_notes('你好')
+    card_updater = CardUpdater(speech_synthesizer, anki_connect_client)
+    query = 'deck:Chinese_1'
+    result = card_updater.add_synthesized_speech_for_query('Word (Character)', 'Generated Speech', query)
+
+    total = len(result)
+    changed = [note_id for note_id in result if result[note_id]]
+    unchanged = [note_id for note_id in result if not result[note_id]]
+
+    print(f'Report: total={total} changed={len(changed)} unchanged={len(unchanged)}')
+    print(f'changed: {changed}')
+    print(f'unchanged: {unchanged}')
 
 
 if __name__ == '__main__':
