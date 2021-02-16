@@ -22,12 +22,6 @@ from cardupdater import CardUpdater
 from speechsynthesizer import SpeechSynthesizer
 
 
-# TODO setup.py
-# TODO license
-# TODO pip requirements
-# TODO tests
-# TODO docs
-
 def parse_config_file(filename):
     with open(filename) as f:
         return yaml.full_load(f)
