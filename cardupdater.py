@@ -36,7 +36,7 @@ class CardUpdater:
         source_value = note_info['fields'][source_field]['value']
         target_value = note_info['fields'][target_field]['value']
         stripped_source = source_value.replace('\n', ' ').strip()
-        media_filename = f'anki_speech_generator-{stripped_source}-{self.speech_synthesizer.voice.name}.wav'
+        media_filename = f'anki-text-to-speech{stripped_source}-{self.speech_synthesizer.voice.name}.wav'
         sound_string = f'[sound:{media_filename}]'
 
         # Is there already a synthesized version of the source_value in the database?
@@ -57,6 +57,6 @@ class CardUpdater:
         # Update target field and tag note
         note_id = note_info['noteId']
         self.anki_connect_client.update_note_field(note_id, target_field, target_value)
-        self.anki_connect_client.tag_note(note_id, 'anki-speech-generator')
+        self.anki_connect_client.tag_note(note_id, 'anki-text-to-speech')
 
         return True
