@@ -59,7 +59,7 @@ class CardUpdater:
             data = self.speech_synthesizer.synthesize_to_base64_string(source_value)
             self.anki_connect_client.add_media(media_filename, data)
 
-        # Has this note has already been processed in a previous run?
+        # Has this note already been processed in a previous run?
         if overwrite_target_field:
             if sound_string == target_value:
                 return False
