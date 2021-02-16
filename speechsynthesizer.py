@@ -14,7 +14,6 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import base64
-from typing import IO
 
 from google.cloud import texttospeech
 from google.oauth2 import service_account
@@ -49,11 +48,3 @@ class SpeechSynthesizer:
     def synthesize_to_base64_string(self, text: str) -> str:
         response = self.synthesize(text)
         return base64.b64encode(response.audio_content).decode('utf-8')
-
-    def synthesize_to_file(self, text: str, output_file: IO) -> None:
-        response = self.synthesize(text)
-        output_file.write(response.audio_content)
-
-    def synthesize_to_filename(self, text: str, filename: str) -> None:
-        with open(filename, 'wb') as output_file:
-            self.synthesize_to_file(text, output_file)
