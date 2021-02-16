@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
 import yaml
 
 from ankiconnectclient import AnkiConnectClient
@@ -22,21 +24,28 @@ from cardupdater import CardUpdater
 from speechsynthesizer import SpeechSynthesizer
 
 
-def parse_config_file(filename):
-    with open(filename) as f:
+def parse_config_file():
+    if len(sys.argv) != 2:
+        print(f'Usage: {sys.argv[0]} <path-to-config.yaml>', file=sys.stderr)
+        sys.exit(1)
+
+    with open(sys.argv[1]) as f:
         return yaml.full_load(f)
 
 
 def main():
-    config = parse_config_file('config.yaml')
-    speech_synthesizer = SpeechSynthesizer(config['credentials_location'],
-                                           config['voice']['languageCode'],
-                                           config['voice']['name'])
-    anki_connect_client = AnkiConnectClient('http://localhost:8765')
+    config = parse_config_file()
+    speech_synthesizer = SpeechSynthesizer(config['googleTextToSpeech']['apiKeyFile'],
+                                           config['googleTextToSpeech']['voice']['languageCode'],
+                                           config['googleTextToSpeech']['voice']['name'])
+    anki_connect_client = AnkiConnectClient(config['ankiConnect']['url'])
 
     card_updater = CardUpdater(speech_synthesizer, anki_connect_client)
-    query = 'deck:Chinese_1'
-    result = card_updater.add_synthesized_speech_for_query('Word (Character)', 'Generated Speech', query)
+    result = card_updater.add_synthesized_speech_for_query(
+        config['generator']['sourceField'],
+        config['generator']['targetField'],
+        config['generator']['filterQuery'],
+        overwrite_target_field=config['generator'].get('overwriteTargetField', False))
 
     total = len(result)
     changed = [note_id for note_id in result if result[note_id]]

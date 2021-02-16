@@ -1,4 +1,12 @@
-credentials_location: "credentials.json"
-voice:
-  languageCode: "cmn-CN"
-  name: "cmn-CN-Wavenet-A"
+generator:
+  sourceField: "Word (Character)"
+  targetField: "Generated Speech"
+  filterQuery: "deck:Chinese_1"
+  overwriteTargetField: false
+ankiConnect:
+  url: "http://localhost:8765"
+googleTextToSpeech:
+  apiKeyFile: "credentials.json"
+  voice:
+    languageCode: "cmn-CN"
+    name: "cmn-CN-Wavenet-A"
